@@ -1,6 +1,5 @@
 package texteitor;
 
-
 public class Main {
 
 

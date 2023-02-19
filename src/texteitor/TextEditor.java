@@ -5,7 +5,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,12 +12,16 @@ import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Locale;
+import java.util.Scanner;
 
 public class TextEditor extends JFrame implements ActionListener {
     JTextArea textArea;
     JMenuBar mb;
     JMenu m1,m2;
-    JMenuItem item1,item2,item3,item4,item5,item6,item7,item8;
+    JMenuItem item1,item2,item3,item4,item5,item6,item7,item8,item9;
+
+
 
     public TextEditor(){
         this.setTitle("baobao's editor");
@@ -26,6 +29,7 @@ public class TextEditor extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(800,400);
         this.setLayout(new FlowLayout());
+
 
         textArea=new JTextArea();
         textArea.setLineWrap(true);
@@ -57,14 +61,17 @@ public class TextEditor extends JFrame implements ActionListener {
         item2=new JMenuItem("copy");
         item3=new JMenuItem("paste");
         item7=new JMenuItem("highlight");
-        item1.addActionListener(this );
-        item2.addActionListener(this );
-        item3.addActionListener(this );
+        item9=new JMenuItem("search");
+        item1.addActionListener(this);
+        item2.addActionListener(this);
+        item3.addActionListener(this);
         item7.addActionListener(this);
+        item9.addActionListener(this);
         m2.add(item1);
         m2.add(item2);
         m2.add(item3);
         m2.add(item7);
+        m2.add(item9);
         mb.add(m2);
 
         this.setJMenuBar(mb);
@@ -72,6 +79,8 @@ public class TextEditor extends JFrame implements ActionListener {
         this.setVisible(true);
 
     }
+
+
 
 
     @Override
@@ -92,6 +101,22 @@ public class TextEditor extends JFrame implements ActionListener {
             if (response==JFileChooser.APPROVE_OPTION){
                 File file;
                 file=new File(fileChooser.getSelectedFile().getPath());
+                Scanner fillIn=null;
+                try {
+                    fillIn =new Scanner(file);
+                    if (file.isFile()){
+                        while (fillIn.hasNextLine()){
+                            String line=fillIn.nextLine()+"\n";
+                            textArea.append(line);
+                        }
+
+                    }
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+                finally {
+                    fillIn.close();
+                }
             }
         }
         else if(e.getSource()==item5){
@@ -120,24 +145,37 @@ public class TextEditor extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
         }else if(e.getSource()==item7){
+
             Highlighter highlighter=textArea.getHighlighter();
-            Highlighter.HighlightPainter painter=new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+            Highlighter.HighlightPainter painter=new DefaultHighlighter.DefaultHighlightPainter(Color.pink);
             highlighter.removeAllHighlights();
-            String text=textArea.getText().toUpperCase();
-            for (int i = 0; i < text.length(); i++) {
-
-                    try {
-
-                        highlighter.addHighlight(i, i + 1, painter);
-                    } catch (BadLocationException ble) {
-                    }
-
-
+            String text=textArea.getText();
+            String field=textArea.getSelectedText();
+            try {
+                int start=text.indexOf(field);
+                int end=start+field.length();
+                highlighter.addHighlight(start, end, painter);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
             }
-        }else if(e.getSource()==item8){
-            System.exit(0);
-        }
 
+
+
+        }else if(e.getSource()==item8) {
+            System.exit(0);
+        }else if(e.getSource()==item9){
+            String search = JOptionPane.showInputDialog("Find What?");
+            Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.orange);
+            int a=textArea.getText().toLowerCase(Locale.ROOT).indexOf(search);
+            int b= a+search.length();
+            textArea.getHighlighter().removeAllHighlights();
+            try {
+                textArea.getHighlighter().addHighlight(a,b,painter);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+
+        }
 
     }
 }
