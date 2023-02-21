@@ -76,7 +76,7 @@ public class TextEditor extends JFrame implements ActionListener {
 //
 //        this.setJMenuBar(mb);
 //
-        this.setVisible(true);
+//        this.setVisible(true);
 //
     }
 //
