@@ -44,6 +44,7 @@ public class Topbar extends JMenuBar{
         m2.add(item7);
         m2.add(item9);
         this.add(m2);
+        this.setVisible(true);
 
 
     }
